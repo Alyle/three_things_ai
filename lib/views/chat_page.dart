@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/chat_controller.dart';
+import 'package:intl/intl.dart';
 
 class ChatPage extends StatelessWidget {
   final ChatController controller = Get.put(ChatController());
@@ -8,6 +9,10 @@ class ChatPage extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
 
   ChatPage({super.key});
+
+  String _formatTime(DateTime time) {
+    return DateFormat('yyyy/MM/dd HH:mm').format(time);
+  }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -42,7 +47,6 @@ class ChatPage extends StatelessWidget {
                 );
               }
               
-              // 当消息更新时，滚动到底部
               WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
               
               return ListView.builder(
@@ -51,28 +55,45 @@ class ChatPage extends StatelessWidget {
                 itemCount: controller.messages.length,
                 itemBuilder: (context, index) {
                   final message = controller.messages[index];
-                  return Padding(
+                  return Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
+                      horizontal: 16.0,
+                      vertical: 8.0,
                     ),
-                    child: Align(
-                      alignment: message.isUser
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: message.isUser
-                              ? Colors.blue[100]
-                              : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8.0),
+                    color: message.isUser ? Colors.blue[50] : Colors.grey[50],
+                    child: Column(
+                      crossAxisAlignment: message.isUser 
+                          ? CrossAxisAlignment.end 
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: message.isUser 
+                              ? MainAxisAlignment.end 
+                              : MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              message.isUser ? '我' : 'AI助手',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _formatTime(message.timestamp),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
+                        const SizedBox(height: 4),
+                        Text(
                           message.content,
                           style: const TextStyle(fontSize: 16),
                         ),
-                      ),
+                      ],
                     ),
                   );
                 },
