@@ -41,6 +41,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
+  String _getPeriodText(GoalPeriod period) {
+    switch (period) {
+      case GoalPeriod.daily:
+        return '今日';
+      case GoalPeriod.weekly:
+        return '本周';
+      case GoalPeriod.monthly:
+        return '本月';
+      case GoalPeriod.quarterly:
+        return '本季';
+      case GoalPeriod.yearly:
+        return '今年';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +107,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           const SizedBox(width: 10),
           FloatingActionButton(
             heroTag: 'add',
-            onPressed: () => Get.dialog(AddGoalDialog(period: _currentPeriod)),
+            onPressed: () {
+              final periodGoals = controller.getGoalsByPeriod(_currentPeriod);
+              if (periodGoals.length >= 3) {
+                Get.snackbar(
+                  '提示',
+                  '${_getPeriodText(_currentPeriod)}最多只能添加三个目标',
+                  duration: const Duration(milliseconds: 1500),
+                );
+                return;
+              }
+              Get.dialog(AddGoalDialog(period: _currentPeriod));
+            },
             backgroundColor: Colors.blue[100],
             child: Icon(Icons.add, color: Colors.blue[900]),
           ),
