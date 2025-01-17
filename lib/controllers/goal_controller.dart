@@ -7,7 +7,7 @@ import '../services/storage_service.dart';
 class GoalController extends GetxController {
   final StorageService _storage;
   final goals = <Goal>[].obs;
-  final _deletedGoals = <Goal>[];
+  final _deletedGoals = <Goal>[].obs;
   final _uuid = const Uuid();
 
   GoalController(this._storage);
@@ -23,11 +23,16 @@ class GoalController extends GetxController {
     goals.assignAll(loadedGoals);
   }
 
-  Future<void> addGoal(String title, String description) async {
-    if (goals.length >= 3) {
+  List<Goal> getGoalsByPeriod(GoalPeriod period) {
+    return goals.where((goal) => goal.period == period).toList();
+  }
+
+  Future<void> addGoal(String title, String description, GoalPeriod period) async {
+    final periodGoals = getGoalsByPeriod(period);
+    if (periodGoals.length >= 3) {
       Get.snackbar(
         '提示',
-        '最多只能添加三个目标',
+        '${_getPeriodText(period)}最多只能添加三个目标',
         duration: const Duration(milliseconds: 1500),
       );
       return;
@@ -38,11 +43,27 @@ class GoalController extends GetxController {
       title: title,
       description: description,
       createdAt: DateTime.now(),
+      period: period,
       isCompleted: false,
     );
 
     goals.add(goal);
     await _storage.saveGoals(goals);
+  }
+
+  String _getPeriodText(GoalPeriod period) {
+    switch (period) {
+      case GoalPeriod.daily:
+        return '每日';
+      case GoalPeriod.weekly:
+        return '每周';
+      case GoalPeriod.monthly:
+        return '每月';
+      case GoalPeriod.quarterly:
+        return '季度';
+      case GoalPeriod.yearly:
+        return '年度';
+    }
   }
 
   Future<void> updateGoalStatus(String id) async {
@@ -85,6 +106,11 @@ class GoalController extends GetxController {
         final deletedGoal = goals.removeAt(goalIndex);
         _deletedGoals.add(deletedGoal);
         await _storage.saveGoals(goals);
+        Get.snackbar(
+          '成功',
+          '目标已删除',
+          duration: const Duration(milliseconds: 1500),
+        );
       }
     } catch (e) {
       debugPrint('删除目标失败: $e');

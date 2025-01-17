@@ -2,24 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'home_page.dart';
 import 'chat_page.dart';
+import '../controllers/navigation_controller.dart';
 
 class MainNavigation extends StatelessWidget {
-  final _currentIndex = 0.obs;
-  final _pages = [
-    HomePage(),
-    ChatPage(),
-  ];
+  MainNavigation({super.key}) {
+    Get.put(NavigationController());
+  }
 
-  MainNavigation({super.key});
+  final _pages = [
+    const HomePage(),
+    const ChatPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() => _pages[_currentIndex.value]),
-      bottomNavigationBar: Obx(
-        () => BottomNavigationBar(
-          currentIndex: _currentIndex.value,
-          onTap: (index) => _currentIndex.value = index,
+    return GetBuilder<NavigationController>(
+      builder: (controller) => Scaffold(
+        body: IndexedStack(
+          index: controller.currentIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: controller.currentIndex,
+          onTap: controller.changePage,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.check_circle_outline),

@@ -50,7 +50,7 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('目标详情'),
+        title: const Text('三件事AI助手'),
         centerTitle: true,
         backgroundColor: Colors.blue[50],
         foregroundColor: Colors.blue[900],

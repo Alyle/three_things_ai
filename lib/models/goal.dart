@@ -12,12 +12,14 @@ class Goal {
   String description;
   final DateTime createdAt;
   bool isCompleted;
+  final GoalPeriod period;
 
   Goal({
     required this.id,
     required this.title,
     required this.description,
     required this.createdAt,
+    required this.period,
     this.isCompleted = false,
   });
 
@@ -27,6 +29,7 @@ class Goal {
     'description': description,
     'createdAt': createdAt.toIso8601String(),
     'isCompleted': isCompleted,
+    'period': period.index,
   };
 
   factory Goal.fromJson(Map<String, dynamic> json) => Goal(
@@ -35,5 +38,6 @@ class Goal {
     description: json['description'],
     createdAt: DateTime.parse(json['createdAt']),
     isCompleted: json['isCompleted'],
+    period: GoalPeriod.values[json['period'] ?? 0],
   );
 } 

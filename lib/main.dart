@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';      // Flutter Material Design 组件
 import 'package:get/get.dart';              // GetX 状态管理
 import 'controllers/goal_controller.dart';   // 目标管理控制器
 import 'views/main_navigation.dart';        // 主导航页面
-import 'controllers/chat_controller.dart';
 import 'services/storage_service.dart';
-import 'services/ai_service.dart';
 
 // 应用程序入口点
 void main() async {
@@ -14,14 +12,11 @@ void main() async {
   
   // 初始化服务
   final storageService = await StorageService().init();
-  final aiService = AIService(
-    baseUrl: 'http://42.192.114.26/v1',  // 替换为你的Dify API地址
-    apiKey: 'app-mq3fD1tCSUb1kHcZ3ENcX20T',   // 替换为你的Dify API密钥
-  );
+
   
   // 初始化控制器
   Get.put(GoalController(storageService));
-  Get.put(ChatController(aiService));
+ 
 
   // 启动应用程序，MyApp 作为根组件
   runApp(const MyApp());
@@ -37,12 +32,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // 返回 GetMaterialApp，这是 GetX 版本的 MaterialApp
     return GetMaterialApp(
-      title: '三件事',
+      title: '三件事AI助手',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
         fontFamily: 'Roboto',
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyLarge: TextStyle(
             fontFamilyFallback: ['Microsoft YaHei', 'Heiti SC', 'sans-serif'],
           ),
