@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/goal_controller.dart';
-import '../../views/goal_detail_page.dart';
+import '../../views/pages/home/goal_detail_page.dart';
 
 class GoalCard extends StatelessWidget {
   final String goalId;

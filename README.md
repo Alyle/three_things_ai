@@ -12,6 +12,18 @@
   - 支持撤销删除操作
   - 即时的操作反馈提示
 
+- AI助手功能
+  - 实时对话界面
+  - 消息时间戳显示
+  - 优雅的消息加载动画
+  - 自动滚动到最新消息
+
+- 用户体验
+  - Material Design 3 风格
+  - 统一的主题系统
+  - 响应式布局
+  - 中文字体优化
+
 ## 待实现功能
 
 ### 目标详情增强
@@ -34,7 +46,7 @@
 - [ ] 目标达成趋势图
 - [ ] 个人效能分析
 
-### AI助手功能
+### AI助手功能增强
 - [ ] 智能目标建议
 - [ ] 目标分解辅助
 - [ ] 进度跟进提醒
@@ -61,14 +73,35 @@
 
 - 使用 GetX 进行状态管理
 - 采用 MVC 架构模式
-- 跨平台支持（移动端和Web端）
+- 跨平台支持（移动端）
 - 响应式编程
+- Material Design 3
 - 中文字体优化
 
 ## 开发环境
 
-- Flutter 版本: 3.16.0
-- Dart 版本: 3.2.0
+- Flutter 版本: 3.19.0
+- Dart 版本: 3.3.0
+- GetX 版本: 4.6.6
+
+## 项目结构
+
+```
+lib/
+├── core/           # 核心功能
+│   ├── constants/  # 常量定义
+│   ├── theme/      # 主题相关
+│   └── utils/      # 工具类
+├── controllers/    # 控制器
+├── models/         # 数据模型
+├── services/       # 服务层
+├── views/          # 视图层
+│   ├── pages/      # 页面
+│   │   ├── home/   # 主页相关
+│   │   └── chat/   # 聊天相关
+│   └── widgets/    # 可复用组件
+└── main.dart       # 入口文件
+```
 
 ## 如何运行
 
@@ -79,21 +112,6 @@
 ```bash
 flutter pub get
 flutter run
-```
-
-## 项目结构
-
-```
-lib/
-├── controllers/     # 控制器
-│   └── goal_controller.dart
-├── models/         # 数据模型
-│   └── goal.dart
-├── services/       # 服务
-│   └── storage_service.dart
-├── views/          # 视图
-│   └── home_page.dart
-└── main.dart       # 入口文件
 ```
 
 ## 许可证

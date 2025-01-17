@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'home_page.dart';
-import 'chat_page.dart';
+import 'pages/home/home_page.dart';
+import 'pages/chat/chat_page.dart';
 import '../controllers/navigation_controller.dart';
 
 class MainNavigation extends StatelessWidget {

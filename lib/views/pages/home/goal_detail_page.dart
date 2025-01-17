@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/goal_controller.dart';
-import '../models/goal.dart';
+import '../../../controllers/goal_controller.dart';
+import '../../../models/goal.dart';
 
 class GoalDetailPage extends StatefulWidget {
   final Goal goal;

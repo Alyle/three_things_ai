@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'controllers/goal_controller.dart';
 import 'views/main_navigation.dart';
 import 'services/storage_service.dart';
-import 'theme/app_theme.dart';  // 新增主题配置文件
+import 'core/theme/app_theme.dart';
 
 // 应用程序入口点
 Future<void> main() async {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: '三件事AI助手',
-      theme: AppTheme.lightTheme,  // 只使用浅色主题
+      theme: AppTheme.theme,  // 使用新的 theme getter
       debugShowCheckedModeBanner: false,
       defaultTransition: Transition.fade,
       home: MainNavigation(),

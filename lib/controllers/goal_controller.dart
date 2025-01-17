@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import '../models/goal.dart';
 import '../services/storage_service.dart';
+import '../core/utils/date_formatter.dart';
 
 class GoalController extends GetxController {
   final StorageService _storage;
@@ -32,7 +33,7 @@ class GoalController extends GetxController {
     if (periodGoals.length >= 3) {
       Get.snackbar(
         '提示',
-        '${_getPeriodText(period)}最多只能添加三个目标',
+        '${DateFormatter.getPeriodText(period)}最多只能添加三个目标',
         duration: const Duration(milliseconds: 1500),
       );
       return;
@@ -49,21 +50,6 @@ class GoalController extends GetxController {
 
     goals.add(goal);
     await _storage.saveGoals(goals);
-  }
-
-  String _getPeriodText(GoalPeriod period) {
-    switch (period) {
-      case GoalPeriod.daily:
-        return '每日';
-      case GoalPeriod.weekly:
-        return '每周';
-      case GoalPeriod.monthly:
-        return '每月';
-      case GoalPeriod.quarterly:
-        return '季度';
-      case GoalPeriod.yearly:
-        return '年度';
-    }
   }
 
   Future<void> updateGoalStatus(String id) async {

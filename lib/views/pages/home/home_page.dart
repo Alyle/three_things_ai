@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../controllers/goal_controller.dart';
-import '../models/goal.dart';
-import 'widgets/add_goal_dialog.dart';
-import 'pages/home/goal_detail_page.dart';
+import '../../../controllers/goal_controller.dart';
+import '../../../models/goal.dart';
+import '../../widgets/add_goal_dialog.dart';
+import 'goal_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
