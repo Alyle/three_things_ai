@@ -58,17 +58,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('三件事AI助手'),
         centerTitle: true,
-        backgroundColor: Colors.blue[50],
-        foregroundColor: Colors.blue[900],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.blue[900],
+          labelColor: theme.appBarTheme.foregroundColor,
           unselectedLabelColor: Colors.blue[200],
-          indicatorColor: Colors.blue[900],
+          indicatorColor: theme.appBarTheme.foregroundColor,
           tabs: const [
             Tab(text: '今日'),
             Tab(text: '本周'),
@@ -98,8 +97,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: FloatingActionButton(
                   heroTag: 'undo',
                   onPressed: () => controller.undoDelete(),
-                  backgroundColor: Colors.blue[100],
-                  child: Icon(Icons.undo, color: Colors.blue[900]),
+                  child: const Icon(Icons.undo),
                 ),
               )
             : const SizedBox.shrink(),
@@ -119,8 +117,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               }
               Get.dialog(AddGoalDialog(period: _currentPeriod));
             },
-            backgroundColor: Colors.blue[100],
-            child: Icon(Icons.add, color: Colors.blue[900]),
+            child: const Icon(Icons.add),
           ),
         ],
       ),
@@ -128,6 +125,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildGoalList(String period) {
+    final theme = Theme.of(context);
     final GoalPeriod goalPeriod = GoalPeriod.values.firstWhere(
       (e) => e.toString().split('.').last == period,
     );
@@ -155,11 +153,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.blue[50],
+                  backgroundColor: theme.colorScheme.surface,
                   child: Text(
                     '${index + 1}',
                     style: TextStyle(
-                      color: Colors.blue[900],
+                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -169,7 +167,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 trailing: Checkbox(
                   value: goal.isCompleted,
                   onChanged: (value) => controller.updateGoalStatus(goal.id),
-                  activeColor: Colors.blue[300],
+                  activeColor: theme.colorScheme.primary,
                 ),
                 onTap: () => Get.to(() => GoalDetailPage(goal: goal)),
               ),
