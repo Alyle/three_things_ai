@@ -11,7 +11,7 @@ class MainNavigation extends StatelessWidget {
 
   final _pages = [
     const HomePage(),
-    const ChatPage(),
+    ChatPage(),
   ];
 
   @override
