@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "three_things_ai",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
