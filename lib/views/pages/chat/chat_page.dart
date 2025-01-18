@@ -5,17 +5,25 @@ import '../../../controllers/chat_controller.dart';
 import '../../../models/chat_message.dart';
 import '../../../core/theme/app_theme.dart';
 
+/// 聊天页面组件
 class ChatPage extends StatelessWidget {
+  /// 聊天控制器
   final ChatController controller = Get.put(ChatController());
+  
+  /// 输入框控制器
   final TextEditingController _textController = TextEditingController();
+  
+  /// 滚动控制器，用于消息列表滚动
   final ScrollController _scrollController = ScrollController();
 
   ChatPage({super.key});
 
+  /// 格式化时间戳
   String _formatTime(DateTime time) {
     return DateFormat('yyyy/MM/dd HH:mm').format(time);
   }
 
+  /// 滚动到消息列表底部
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -26,8 +34,10 @@ class ChatPage extends StatelessWidget {
     }
   }
 
+  /// 构建单条消息气泡
   Widget _buildMessage(BuildContext context, ChatMessage message) {
     return Column(
+      // 根据消息发送者调整对齐方式
       crossAxisAlignment: message.isUser 
           ? CrossAxisAlignment.end 
           : CrossAxisAlignment.start,
@@ -37,6 +47,7 @@ class ChatPage extends StatelessWidget {
             horizontal: 16.0,
             vertical: 8.0,
           ),
+          // 根据发送者设置不同背景色
           color: message.isUser 
               ? AppColors.chatUserBackground 
               : AppColors.chatAiBackground,
@@ -45,6 +56,7 @@ class ChatPage extends StatelessWidget {
                 ? CrossAxisAlignment.end 
                 : CrossAxisAlignment.start,
             children: [
+              // 消息头部：发送者和时间
               Row(
                 mainAxisAlignment: message.isUser 
                     ? MainAxisAlignment.end 
@@ -68,6 +80,7 @@ class ChatPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
+              // 消息内容，支持选择文本
               SelectableText(
                 message.content,
                 style: const TextStyle(fontSize: 16),
@@ -75,8 +88,10 @@ class ChatPage extends StatelessWidget {
             ],
           ),
         ),
+        // AI回复后显示建议按钮
         if (!message.isUser && message.suggestions?.isNotEmpty == true)
-          Padding(
+          Container(
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Wrap(
               spacing: 8.0,
@@ -114,6 +129,7 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      // 顶部应用栏
       appBar: AppBar(
         title: const Text('AI 助手'),
         elevation: 0,
@@ -122,8 +138,10 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // 消息列表区域
           Expanded(
             child: Obx(() {
+              // 空消息提示
               if (controller.messages.isEmpty) {
                 return Center(
                   child: Text(
@@ -136,8 +154,10 @@ class ChatPage extends StatelessWidget {
                 );
               }
               
+              // 每次构建后滚动到底部
               WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
               
+              // 消息列表
               return ListView.separated(
                 controller: _scrollController,
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -151,6 +171,7 @@ class ChatPage extends StatelessWidget {
               );
             }),
           ),
+          // 加载指示器
           Obx(() {
             if (controller.isLoading.value) {
               return Padding(
@@ -163,6 +184,7 @@ class ChatPage extends StatelessWidget {
             }
             return const SizedBox.shrink();
           }),
+          // 底部输入区域
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             decoration: BoxDecoration(
@@ -178,6 +200,7 @@ class ChatPage extends StatelessWidget {
             ),
             child: Row(
               children: [
+                // 输入框
                 Expanded(
                   child: TextField(
                     controller: _textController,
@@ -199,6 +222,7 @@ class ChatPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8.0),
+                // 发送按钮
                 IconButton(
                   icon: Icon(
                     Icons.send_rounded,
@@ -214,6 +238,7 @@ class ChatPage extends StatelessWidget {
     );
   }
 
+  /// 处理消息发送
   void _handleSubmit(String value) {
     if (value.trim().isNotEmpty) {
       controller.sendMessage(value);

@@ -1,9 +1,9 @@
 enum GoalPeriod {
-  daily,    // 每天
-  weekly,   // 每周
-  monthly,  // 每月
-  quarterly,// 每季度
-  yearly    // 每年
+  day,       // 每天
+  week,      // 每周
+  month,     // 每月
+  quarter, // 每季度
+  year       // 每年
 }
 
 class Goal {

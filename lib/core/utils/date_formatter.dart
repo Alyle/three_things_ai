@@ -8,11 +8,11 @@ class DateFormatter {
   
   static String getPeriodText(GoalPeriod period) {
     switch (period) {
-      case GoalPeriod.daily: return '今日';
-      case GoalPeriod.weekly: return '本周';
-      case GoalPeriod.monthly: return '本月';
-      case GoalPeriod.quarterly: return '本季';
-      case GoalPeriod.yearly: return '今年';
+      case GoalPeriod.day: return '今日';
+      case GoalPeriod.week: return '本周';
+      case GoalPeriod.month: return '本月';
+      case GoalPeriod.quarter: return '本季';
+      case GoalPeriod.year: return '今年';
     }
   }
 } 
