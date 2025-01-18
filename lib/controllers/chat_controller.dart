@@ -1,28 +1,30 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/chat_message.dart';
 import '../services/ai_service.dart';
+import '../core/constants/app_constants.dart';
 
 class ChatController extends GetxController {
   final AIService _aiService = AIService();
   final messages = <ChatMessage>[].obs;
   final isLoading = false.obs;
   final currentResponse = ''.obs;
+  final List<Map<String, dynamic>> _pendingResponses = [];
 
   Future<void> sendMessage(String content) async {
     if (content.trim().isEmpty) return;
 
-    // 添加用户消息
     final userMessage = ChatMessage(
       content: content,
       isUser: true,
     );
     messages.add(userMessage);
 
-    // 设置加载状态
     isLoading.value = true;
     currentResponse.value = '';
+    _pendingResponses.clear();
 
-    // 添加AI响应消息占位
     final aiMessage = ChatMessage(
       content: '',
       isUser: false,
@@ -30,20 +32,67 @@ class ChatController extends GetxController {
     messages.add(aiMessage);
 
     try {
-      // 获取AI响应流
+      String fullResponse = '';
       await for (final chunk in _aiService.getChatResponseStream(content)) {
-        currentResponse.value += chunk;
-        // 更新最后一条消息的内容
+        fullResponse += chunk;
+        
+        if (fullResponse.trim().startsWith('{') && fullResponse.trim().endsWith('}')) {
+          try {
+            final jsonResponse = jsonDecode(fullResponse);
+            _pendingResponses.add(jsonResponse);
+            
+            // 合并所有响应
+            String mergedContent = '';
+            for (var response in _pendingResponses) {
+              if (response['type'] == 'goal_query') {
+                mergedContent += response['answer'] ?? '';
+              } else if (response['type'] == 'goal_action') {
+                mergedContent += response['confirmation']['message'] ?? '';
+              }
+              mergedContent += '\n';
+            }
+            
+            currentResponse.value = mergedContent.trim();
+            
+            // 只在收到新的完整响应时显示提示
+            Get.snackbar(
+              '提示',
+              '收到新的响应',
+              duration: AppConstants.snackBarDuration,
+              backgroundColor: Colors.blue[100],
+              snackPosition: SnackPosition.TOP,
+            );
+          } catch (e) {
+            currentResponse.value = fullResponse;
+            Get.snackbar(
+              '错误',
+              'JSON解析失败',
+              duration: AppConstants.snackBarDuration,
+              backgroundColor: Colors.red[100],
+              snackPosition: SnackPosition.TOP,
+            );
+          }
+        } else {
+          currentResponse.value = fullResponse;
+        }
+        
         messages.last.content = currentResponse.value;
         messages.refresh();
       }
     } catch (e) {
-      // 更新错误消息
       messages.last.content = '抱歉，发生了一些错误，请稍后重试。';
       messages.refresh();
+      Get.snackbar(
+        '错误',
+        '请求失败',
+        duration: AppConstants.snackBarDuration,
+        backgroundColor: Colors.red[100],
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isLoading.value = false;
       currentResponse.value = '';
+      _pendingResponses.clear();
     }
   }
 } 

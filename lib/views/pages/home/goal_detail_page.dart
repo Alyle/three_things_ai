@@ -37,9 +37,9 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
       if (_isEditing) {
         // 保存更改
         _controller.updateGoalDetails(
-          widget.goal.id,
-          _titleController.text,
-          _descriptionController.text,
+          goalId: widget.goal.id,
+          title: _titleController.text,
+          description: _descriptionController.text,
         );
       }
       _isEditing = !_isEditing;

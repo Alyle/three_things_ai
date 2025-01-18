@@ -31,9 +31,9 @@ class _AddGoalDialogState extends State<AddGoalDialog> {
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       _controller.addGoal(
-        _titleController.text,
-        _descriptionController.text,
-        widget.period,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        period: widget.period,
       );
       Get.back();
     }

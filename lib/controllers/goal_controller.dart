@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../models/goal.dart';
 import '../services/storage_service.dart';
 import '../core/utils/date_formatter.dart';
+import '../core/constants/app_constants.dart';
 
 class GoalController extends GetxController {
   final StorageService _storage;
@@ -28,28 +29,52 @@ class GoalController extends GetxController {
     return goals.where((goal) => goal.period == period).toList();
   }
 
-  Future<void> addGoal(String title, String description, GoalPeriod period) async {
-    final periodGoals = getGoalsByPeriod(period);
-    if (periodGoals.length >= 3) {
-      Get.snackbar(
-        '提示',
-        '${DateFormatter.getPeriodText(period)}最多只能添加三个目标',
-        duration: const Duration(milliseconds: 1500),
+  Future<void> addGoal({
+    required String title,
+    required String description,
+    required GoalPeriod period,
+    DateTime? deadline,
+    List<String>? tags,
+    int priority = GoalPriority.medium,
+  }) async {
+    try {
+      final periodGoals = getGoalsByPeriod(period);
+      if (periodGoals.length >= 3) {
+        Get.snackbar(
+          '提示',
+          '${DateFormatter.getPeriodText(period)}最多只能添加三个目标',
+          duration: AppConstants.snackBarDuration,
+        );
+        return;
+      }
+
+      final goal = Goal(
+        id: _uuid.v4(),
+        title: title,
+        description: description,
+        createdAt: DateTime.now(),
+        period: period,
+        deadline: deadline,
+        tags: tags,
+        priority: priority,
       );
-      return;
+
+      goals.add(goal);
+      await _storage.saveGoals(goals);
+      
+      Get.snackbar(
+        '成功',
+        '目标添加成功',
+        duration: AppConstants.snackBarDuration,
+      );
+    } catch (e) {
+      debugPrint('添加目标失败: $e');
+      Get.snackbar(
+        '错误',
+        '添加目标失败',
+        duration: AppConstants.snackBarDuration,
+      );
     }
-
-    final goal = Goal(
-      id: _uuid.v4(),
-      title: title,
-      description: description,
-      createdAt: DateTime.now(),
-      period: period,
-      isCompleted: false,
-    );
-
-    goals.add(goal);
-    await _storage.saveGoals(goals);
   }
 
   Future<void> updateGoalStatus(String id) async {
@@ -61,18 +86,30 @@ class GoalController extends GetxController {
     }
   }
 
-  Future<void> updateGoalDetails(String goalId, String title, String description) async {
+  Future<void> updateGoalDetails({
+    required String goalId,
+    String? title,
+    String? description,
+    DateTime? deadline,
+    List<String>? tags,
+    int? priority,
+  }) async {
     try {
       final goalIndex = goals.indexWhere((g) => g.id == goalId);
       if (goalIndex != -1) {
-        goals[goalIndex].title = title;
-        goals[goalIndex].description = description;
+        if (title != null) goals[goalIndex].title = title;
+        if (description != null) goals[goalIndex].description = description;
+        if (deadline != null) goals[goalIndex].deadline = deadline;
+        if (tags != null) goals[goalIndex].tags = tags;
+        if (priority != null) goals[goalIndex].priority = priority;
+        
         goals.refresh();
         await _storage.saveGoals(goals);
+        
         Get.snackbar(
           '成功',
           '目标更新成功',
-          duration: const Duration(milliseconds: 1500),
+          duration: AppConstants.snackBarDuration,
         );
       }
     } catch (e) {
@@ -80,7 +117,7 @@ class GoalController extends GetxController {
       Get.snackbar(
         '错误',
         '更新目标失败',
-        duration: const Duration(milliseconds: 1500),
+        duration: AppConstants.snackBarDuration,
       );
     }
   }
@@ -95,7 +132,7 @@ class GoalController extends GetxController {
         Get.snackbar(
           '成功',
           '目标已删除',
-          duration: const Duration(milliseconds: 1500),
+          duration: AppConstants.snackBarDuration,
         );
       }
     } catch (e) {
@@ -103,7 +140,7 @@ class GoalController extends GetxController {
       Get.snackbar(
         '错误',
         '删除目标失败',
-        duration: const Duration(milliseconds: 1500),
+        duration: AppConstants.snackBarDuration,
       );
     }
   }
@@ -117,7 +154,7 @@ class GoalController extends GetxController {
         Get.snackbar(
           '成功',
           '已撤销删除',
-          duration: const Duration(milliseconds: 1500),
+          duration: AppConstants.snackBarDuration,
         );
       }
     } catch (e) {
@@ -125,7 +162,7 @@ class GoalController extends GetxController {
       Get.snackbar(
         '错误',
         '撤销删除失败',
-        duration: const Duration(milliseconds: 1500),
+        duration: AppConstants.snackBarDuration,
       );
     }
   }
