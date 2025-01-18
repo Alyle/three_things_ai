@@ -42,13 +42,26 @@
 </head>
 <body>
   <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.load({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        }
-      });
+    window.addEventListener('load', async function(ev) {
+      // 添加错误处理和调试信息
+      try {
+        const main = document.createElement('script');
+        main.src = 'main.dart.js';
+        document.body.appendChild(main);
+        
+        await _flutter.loader.load({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: function(engineInitializer) {
+            engineInitializer.initializeEngine().then(function(appRunner) {
+              appRunner.runApp();
+            });
+          }
+        });
+      } catch (e) {
+        console.error('Flutter 初始化失败:', e);
+      }
     });
   </script>
 </body>
