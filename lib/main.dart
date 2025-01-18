@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'controllers/goal_controller.dart';
-import 'views/main_navigation.dart';
+import 'views/navigation/main_navigation.dart';
 import 'services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 

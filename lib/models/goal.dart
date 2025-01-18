@@ -54,6 +54,28 @@ class Goal {
     tags: List<String>.from(json['tags'] ?? []),
     priority: json['priority'] ?? 2,
   );
+
+  Goal copyWith({
+    String? title,
+    String? description,
+    GoalPeriod? period,
+    DateTime? deadline,
+    List<String>? tags,
+    int? priority,
+    bool? isCompleted,
+  }) {
+    return Goal(
+      id: id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      period: period ?? this.period,
+      deadline: deadline ?? this.deadline,
+      tags: tags ?? this.tags,
+      priority: priority ?? this.priority,
+      isCompleted: isCompleted ?? this.isCompleted,
+      createdAt: createdAt,
+    );
+  }
 }
 
 // 优先级常量

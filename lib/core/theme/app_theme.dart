@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// 应用主题配置
 class AppTheme {
+  /// 主题数据
   static ThemeData get theme => ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
@@ -9,96 +11,163 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: AppColors.surface,
     useMaterial3: true,
-    fontFamily: AppFonts.primaryFont,
-    textTheme: AppTextStyles.textTheme,
-    appBarTheme: AppBarStyles.theme,
-    cardTheme: AppCardStyles.theme,
-    checkboxTheme: AppCheckboxStyles.theme,
-    inputDecorationTheme: AppInputStyles.theme,
-    iconTheme: AppIconStyles.theme,
+    fontFamily: AppFonts.primary,
+    textTheme: AppTextStyles.theme,
+    appBarTheme: AppComponentStyles.appBarTheme,
+    cardTheme: AppComponentStyles.cardTheme,
+    checkboxTheme: AppComponentStyles.checkboxTheme,
+    inputDecorationTheme: AppComponentStyles.inputTheme,
+    iconTheme: AppComponentStyles.iconTheme,
+  );
+
+  /// Snackbar 主题配置
+  static final snackbarTheme = {
+    'success': const SnackbarConfig(
+      backgroundColor: Color(0xFFE8F5E9),
+      textColor: Color(0xFF1B5E20),
+      icon: Icons.check_circle,
+      iconColor: Color(0xFF1B5E20),
+    ),
+    'error': const SnackbarConfig(
+      backgroundColor: Color(0xFFFFEBEE),
+      textColor: Color(0xFFB71C1C),
+      icon: Icons.error,
+      iconColor: Color(0xFFB71C1C),
+    ),
+    'info': const SnackbarConfig(
+      backgroundColor: Color(0xFFE3F2FD),
+      textColor: Color(0xFF0D47A1),
+      icon: Icons.info,
+      iconColor: Color(0xFF0D47A1),
+    ),
+  };
+
+  /// Snackbar 通用样式
+  static const snackbarStyle = SnackbarStyle(
+    margin: EdgeInsets.all(8),
+    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    borderRadius: 8.0,
+    titleSize: 16.0,
+    messageSize: 14.0,
+    iconSize: 28.0,
+    duration: Duration(seconds: 2),
   );
 }
 
+/// 应用颜色配置
 class AppColors {
   static const MaterialColor primary = Colors.blue;
   static const Color surface = Color(0xFFF5F9FF);
   static const Color textPrimary = Color(0xFF2C3E50);
   static const Color textSecondary = Color(0xFF34495E);
   static const Color cardBackground = Colors.white;
-  static const Color error = Colors.red;
-  static const Color success = Colors.green;
   static const Color chatUserBackground = Color(0xFFE3F2FD);
   static const Color chatAiBackground = Color(0xFFF5F5F5);
   static const Color iconColor = Color(0xFF2196F3);
   static const Color hintText = Colors.grey;
 }
 
+/// 字体配置
 class AppFonts {
-  static const String primaryFont = 'Roboto';
-  static const List<String> fallbackFonts = [
+  static const String primary = 'Roboto';
+  static const List<String> fallback = [
     'Microsoft YaHei',
     'Heiti SC',
     'sans-serif'
   ];
 }
 
+/// 文本样式配置
 class AppTextStyles {
-  static const TextTheme textTheme = TextTheme(
+  static const TextTheme theme = TextTheme(
     bodyLarge: TextStyle(
-      fontFamilyFallback: AppFonts.fallbackFonts,
+      fontFamilyFallback: AppFonts.fallback,
       color: AppColors.textPrimary,
     ),
     bodyMedium: TextStyle(
-      fontFamilyFallback: AppFonts.fallbackFonts,
+      fontFamilyFallback: AppFonts.fallback,
       color: AppColors.textSecondary,
     ),
   );
 }
 
-class AppBarStyles {
-  static const AppBarTheme theme = AppBarTheme(
+/// 组件样式配置
+abstract class AppComponentStyles {
+  /// AppBar 样式
+  static const appBarTheme = AppBarTheme(
     elevation: 0,
     centerTitle: true,
     backgroundColor: AppColors.primary,
     foregroundColor: Colors.white,
   );
-}
 
-class AppCardStyles {
-  static final CardTheme theme = CardTheme(
+  /// Card 样式
+  static final cardTheme = CardTheme(
     elevation: 1,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),
     color: AppColors.cardBackground,
   );
-}
 
-class AppCheckboxStyles {
-  static final CheckboxThemeData theme = CheckboxThemeData(
+  /// Checkbox 样式
+  static final checkboxTheme = CheckboxThemeData(
     fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-      if (states.contains(WidgetState.selected)) {
-        return AppColors.primary;
-      }
-      return Colors.transparent;
+      return states.contains(WidgetState.selected)
+          ? AppColors.primary
+          : Colors.transparent;
     }),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(4),
     ),
   );
-}
 
-class AppInputStyles {
-  static const InputDecorationTheme theme = InputDecorationTheme(
+  /// Input 样式
+  static const inputTheme = InputDecorationTheme(
     border: InputBorder.none,
     hintStyle: TextStyle(color: AppColors.hintText),
     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
   );
-}
 
-class AppIconStyles {
-  static const IconThemeData theme = IconThemeData(
+  /// Icon 样式
+  static const iconTheme = IconThemeData(
     color: AppColors.iconColor,
     size: 24,
   );
+}
+
+/// Snackbar 配置
+class SnackbarConfig {
+  final Color backgroundColor;
+  final Color textColor;
+  final IconData icon;
+  final Color iconColor;
+
+  const SnackbarConfig({
+    required this.backgroundColor,
+    required this.textColor,
+    required this.icon,
+    required this.iconColor,
+  });
+}
+
+/// Snackbar 通用样式配置
+class SnackbarStyle {
+  final EdgeInsets margin;
+  final EdgeInsets padding;
+  final double borderRadius;
+  final double titleSize;
+  final double messageSize;
+  final double iconSize;
+  final Duration duration;
+
+  const SnackbarStyle({
+    required this.margin,
+    required this.padding,
+    required this.borderRadius,
+    required this.titleSize,
+    required this.messageSize,
+    required this.iconSize,
+    required this.duration,
+  });
 } 

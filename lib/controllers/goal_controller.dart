@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../models/goal.dart';
 import '../services/storage_service.dart';
 import '../core/utils/date_formatter.dart';
-import '../core/constants/app_constants.dart';
+import '../services/notification_service.dart';
 
 class GoalController extends GetxController {
   final StorageService _storage;
@@ -35,15 +35,13 @@ class GoalController extends GetxController {
     required GoalPeriod period,
     DateTime? deadline,
     List<String>? tags,
-    int priority = GoalPriority.medium,
+    int? priority,
   }) async {
     try {
-      final periodGoals = getGoalsByPeriod(period);
-      if (periodGoals.length >= 3) {
-        Get.snackbar(
+      if (getGoalsByPeriod(period).length >= 3) {
+        NotificationService.info(
           '提示',
           '${DateFormatter.getPeriodText(period)}最多只能添加三个目标',
-          duration: AppConstants.snackBarDuration,
         );
         return;
       }
@@ -55,25 +53,17 @@ class GoalController extends GetxController {
         createdAt: DateTime.now(),
         period: period,
         deadline: deadline,
-        tags: tags,
-        priority: priority,
+        tags: tags ?? [],
+        priority: priority ?? 0,
       );
 
       goals.add(goal);
       await _storage.saveGoals(goals);
       
-      Get.snackbar(
-        '成功',
-        '目标添加成功',
-        duration: AppConstants.snackBarDuration,
-      );
+      NotificationService.success('目标添加成功');
     } catch (e) {
       debugPrint('添加目标失败: $e');
-      Get.snackbar(
-        '错误',
-        '添加目标失败',
-        duration: AppConstants.snackBarDuration,
-      );
+      NotificationService.error('添加目标失败');
     }
   }
 
@@ -106,19 +96,11 @@ class GoalController extends GetxController {
         goals.refresh();
         await _storage.saveGoals(goals);
         
-        Get.snackbar(
-          '成功',
-          '目标更新成功',
-          duration: AppConstants.snackBarDuration,
-        );
+        NotificationService.success('目标更新成功');
       }
     } catch (e) {
       debugPrint('更新目标失败: $e');
-      Get.snackbar(
-        '错误',
-        '更新目标失败',
-        duration: AppConstants.snackBarDuration,
-      );
+      NotificationService.error('更新目标失败');
     }
   }
 
@@ -129,19 +111,11 @@ class GoalController extends GetxController {
         final deletedGoal = goals.removeAt(goalIndex);
         _deletedGoals.add(deletedGoal);
         await _storage.saveGoals(goals);
-        Get.snackbar(
-          '成功',
-          '目标已删除',
-          duration: AppConstants.snackBarDuration,
-        );
+        NotificationService.success('目标已删除');
       }
     } catch (e) {
       debugPrint('删除目标失败: $e');
-      Get.snackbar(
-        '错误',
-        '删除目标失败',
-        duration: AppConstants.snackBarDuration,
-      );
+      NotificationService.error('删除目标失败');
     }
   }
 
@@ -151,21 +125,42 @@ class GoalController extends GetxController {
         final goalToRestore = _deletedGoals.removeLast();
         goals.add(goalToRestore);
         await _storage.saveGoals(goals);
-        Get.snackbar(
-          '成功',
-          '已撤销删除',
-          duration: AppConstants.snackBarDuration,
-        );
+        NotificationService.success('已撤销删除');
       }
     } catch (e) {
       debugPrint('撤销删除失败: $e');
-      Get.snackbar(
-        '错误',
-        '撤销删除失败',
-        duration: AppConstants.snackBarDuration,
-      );
+      NotificationService.error('撤销删除失败');
     }
   }
 
   bool get hasDeletedGoals => _deletedGoals.isNotEmpty;
+
+  /// 更新目标
+  Future<void> updateGoal(
+    String id, {
+    String? title,
+    String? description,
+    DateTime? deadline,
+    List<String>? tags,
+    int? priority,
+  }) async {
+    try {
+      final goalIndex = goals.indexWhere((goal) => goal.id == id);
+      if (goalIndex != -1) {
+        final updatedGoal = goals[goalIndex].copyWith(
+          title: title,
+          description: description,
+          deadline: deadline,
+          tags: tags,
+          priority: priority,
+        );
+        goals[goalIndex] = updatedGoal;
+        await _storage.saveGoals(goals);
+        NotificationService.success('目标已更新');
+      }
+    } catch (e) {
+      debugPrint('更新目标失败: $e');
+      NotificationService.error('更新目标失败');
+    }
+  }
 } 
