@@ -6,6 +6,8 @@ import 'views/navigation/main_navigation.dart';
 import 'services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/config/app_config.dart';
+import 'controllers/user_controller.dart';
+
 
 // 应用程序入口点
 Future<void> main() async {
@@ -27,6 +29,7 @@ Future<void> main() async {
     }
     
     // 初始化控制器
+    Get.put<UserController>(UserController(storageService));
     Get.put<GoalController>(GoalController(storageService));
     
     // 启动应用程序

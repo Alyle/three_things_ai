@@ -68,8 +68,7 @@ class ChatController extends GetxController {
         aiMessage.content = fullResponse;
         messages.refresh();  // 使用 refresh 而不是 update
 
-        // 记录日志
-        _logResponse(fullResponse, content);
+
       }
 
       // 如果启用了JSON检查，尝试解析和处理JSON响应
@@ -88,7 +87,8 @@ class ChatController extends GetxController {
         'wordCount': fullResponse.length.toString(),
         'duration': (responseDuration.inMilliseconds / 1000).toStringAsFixed(2),
       };
-
+        // 记录日志
+      _logResponse(fullResponse, content);
       messages.refresh();  // 最后再次刷新确保显示
       scrollToBottom();
     } catch (e) {
@@ -103,11 +103,12 @@ class ChatController extends GetxController {
   /// [fullResponse] AI响应的完整内容
   /// [content] 用户发送的消息内容
   void _logResponse(String fullResponse, String content) {
+    final logService = Get.find<LogService>();
     if (AppConfig.features.enableLogging) {
-      LogService().info('AI响应内容: $fullResponse'); // 记录响应内容到日志文件
+      logService.info('AI响应内容: $fullResponse');
     }
     if (AppConfig.features.enableChatLogging) {
-      LogService().info('聊天内容: $content'); // 记录聊天内容到日志文件
+      logService.info('聊天内容: $content');
     }
   }
 

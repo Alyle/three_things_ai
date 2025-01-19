@@ -29,8 +29,8 @@ class AppConfig {
   /// 路径配置
   static const path = _PathConfig(
     webDocumentsPath: '/documents',  // Web环境下的文档目录
-    webLogsPath: '/logs',            // Web环境下的日志目录
-    webCachePath: '/cache',          // Web环境下的缓存目录
+    webLogsPath: '/documents/logs',            // Web环境下的日志目录
+    webCachePath: '/documents/cache',          // Web环境下的缓存目录
   );
 }
 
