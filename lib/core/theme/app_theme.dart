@@ -2,22 +2,149 @@ import 'package:flutter/material.dart';
 
 /// 应用主题配置
 class AppTheme {
-  /// 主题数据
-  static ThemeData get theme => ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
-      surface: AppColors.surface,
+  /// 主题色
+  static const Color primary = Color(0xFF1E88E5);
+  static const Color primaryLight = Color(0xFFE3F2FD);
+  static const Color primaryDark = Color(0xFF1565C0);
+  
+  /// 文本颜色
+  static const Color textPrimary = Color(0xFF333333);
+  static const Color textSecondary = Color(0xFF666666);
+  static const Color textHint = Color(0xFF999999);
+  
+  /// 背景颜色
+  static const Color background = Colors.white;
+  static const Color cardBackground = Color(0xFFF5F5F5);
+  static const Color chatUserBackground = Color(0xFFE3F2FD);
+  static const Color chatAiBackground = Color(0xFFF5F5F5);
+  
+  /// 边框颜色
+  static const Color border = Color(0xFFEEEEEE);
+  
+  /// 间距
+  static const double spacingXS = 4.0;
+  static const double spacingS = 8.0;
+  static const double spacingM = 16.0;
+  static const double spacingL = 24.0;
+  static const double spacingXL = 32.0;
+  
+  /// 圆角
+  static const double radiusS = 4.0;
+  static const double radiusM = 8.0;
+  static const double radiusL = 16.0;
+  static const double radiusXL = 24.0;
+  
+  /// 字体大小
+  static const double fontSizeXS = 12.0;
+  static const double fontSizeS = 14.0;
+  static const double fontSizeM = 16.0;
+  static const double fontSizeL = 18.0;
+  static const double fontSizeXL = 20.0;
+  
+  /// 卡片样式
+  static final cardDecoration = BoxDecoration(
+    color: background,
+    borderRadius: BorderRadius.circular(radiusM),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withAlpha(13),  // 0.05 * 255 ≈ 13
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ],
+  );
+  
+  /// 按钮样式
+  static final buttonStyle = ElevatedButton.styleFrom(
+    backgroundColor: primaryLight,
+    foregroundColor: primaryDark,
+    elevation: 0,
+    padding: const EdgeInsets.symmetric(
+      horizontal: spacingM,
+      vertical: spacingS,
     ),
-    scaffoldBackgroundColor: AppColors.surface,
-    useMaterial3: true,
-    fontFamily: AppFonts.primary,
-    textTheme: AppTextStyles.theme,
-    appBarTheme: AppComponentStyles.appBarTheme,
-    cardTheme: AppComponentStyles.cardTheme,
-    checkboxTheme: AppComponentStyles.checkboxTheme,
-    inputDecorationTheme: AppComponentStyles.inputTheme,
-    iconTheme: AppComponentStyles.iconTheme,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(radiusL),
+      side: const BorderSide(color: primary),
+    ),
+  );
+  
+  /// 输入框样式
+  static final inputDecoration = InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radiusM),
+      borderSide: const BorderSide(color: border),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radiusM),
+      borderSide: const BorderSide(color: border),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radiusM),
+      borderSide: const BorderSide(color: primary),
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: spacingM,
+      vertical: spacingS,
+    ),
+  );
+  
+  /// 聊天消息样式
+  static const chatMessageStyle = TextStyle(
+    fontSize: fontSizeM,
+    color: textPrimary,
+  );
+  
+  static const chatStatsStyle = TextStyle(
+    fontSize: fontSizeXS,
+    color: textSecondary,
+  );
+  
+  /// 获取主题数据
+  static ThemeData get theme => ThemeData(
+    primaryColor: primary,
+    scaffoldBackgroundColor: background,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: primaryLight,
+      foregroundColor: primaryDark,
+      elevation: 0,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: buttonStyle,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusM),
+        borderSide: const BorderSide(color: border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusM),
+        borderSide: const BorderSide(color: border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusM),
+        borderSide: const BorderSide(color: primary),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: spacingM,
+        vertical: spacingS,
+      ),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(
+        fontSize: fontSizeM,
+        color: textPrimary,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: fontSizeS,
+        color: textSecondary,
+      ),
+      labelLarge: TextStyle(
+        fontSize: fontSizeS,
+        color: textPrimary,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
   );
 
   /// Snackbar 主题配置

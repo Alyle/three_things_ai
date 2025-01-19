@@ -6,6 +6,7 @@ import '../models/goal.dart';
 import '../controllers/goal_controller.dart';
 import '../services/notification_service.dart';
 import '../core/utils/json_fixer.dart';
+import '../core/config/app_config.dart';
 
 /// 聊天控制器：负责管理AI对话的状态和业务逻辑
 class ChatController extends GetxController {
@@ -52,38 +53,36 @@ class ChatController extends GetxController {
     try {
       String fullResponse = '';
       bool jsonProcessed = false;
+      Duration? responseDuration;
 
-      await for (final chunk in _aiService.getChatResponseStream(content)) {
-        fullResponse += chunk;
-        //currentResponse.value = fullResponse;
+      await for (final response in _aiService.getChatResponseStream(content)) {
+        fullResponse += response['content'] as String;
+        responseDuration = response['duration'] as Duration;
         
-        // 检查是否收到完整的JSON响应
-        if (!jsonProcessed && 
+        // 根据配置决定是否进行JSON检查
+        if (AppConfig.feature.enableJsonCheck && 
+            !jsonProcessed && 
             fullResponse.trim().startsWith('{') && 
             fullResponse.trim().endsWith('}')) {
           try {
-            debugPrint('收到AI响应: $fullResponse');
-            
-            // 使用 JsonFixer 处理响应
             final jsonResponse = JsonFixer.fixAndParseJson(fullResponse);
             if (jsonResponse != null) {
               await _handleJsonResponse(jsonResponse);
               jsonProcessed = true;
-            } else {
-              debugPrint('JSON修正失败，跳过处理');
             }
           } catch (e) {
             debugPrint('JSON解析失败: $e');
           }
         }
         
+        currentResponse.value = fullResponse;
+        final stats = {
+          'wordCount': fullResponse.length.toString().padLeft(4),
+          'duration': (responseDuration.inMilliseconds / 1000).toStringAsFixed(2)
+        };
         messages.last.content = currentResponse.value;
+        messages.last.stats = stats;
         messages.refresh();
-      }
-
-      // 如果不是JSON格式，也打印最终响应
-      if (!jsonProcessed) {
-        debugPrint('收到非JSON响应: $fullResponse');
       }
     } catch (e) {
       debugPrint('发送消息失败: $e');
@@ -103,12 +102,6 @@ class ChatController extends GetxController {
         break;
       case 'goal_action':  // 处理目标操作响应
         await _handleGoalAction(jsonResponse);
-        // 处理完目标操作后更新建议选项
-        if (jsonResponse['suggestions'] != null) {
-          final newSuggestions = List<String>.from(jsonResponse['suggestions']);
-          messages.last.suggestions = newSuggestions;
-          suggestions.assignAll(newSuggestions);
-        }
         break;
     }
   }
@@ -130,17 +123,16 @@ class ChatController extends GetxController {
   /// 处理目标操作响应（添加/更新/删除目标）
   /// [response] 操作响应数据
   Future<void> _handleGoalAction(Map<String, dynamic> response) async {
-    final actionNum = response['action_num'] as int;  // 操作数量
-    final actions = response['actions'] as List;      // 操作列表
-    final goalController = Get.find<GoalController>();
-    var successCount = 0;
-    final operationResults = <String>[];  // 存储操作结果
-    
     try {
-      // 处理每个目标操作
-      for (var i = 0; i < actionNum; i++) {
-        final action = actions[i];
-        final data = action['data'];
+      final actionNum = response['action_num'] as int;  // 操作数量
+      final actions = response['actions'] as List;      // 操作列表
+      final goalController = Get.find<GoalController>();
+      var successCount = 0;
+      final operationResults = <String>[];
+
+      // 处理每个操作
+      for (final action in actions) {
+        final data = action['data'] as Map<String, dynamic>;
         final period = _getPeriodText(data['period']);
         
         switch (action['action']) {
@@ -167,6 +159,13 @@ class ChatController extends GetxController {
       // 更新操作结果消息
       currentResponse.value = 
           '已成功处理 $successCount/$actionNum 个目标操作：\n${operationResults.map((r) => ' - $r').join('\n')}';
+
+      // 更新建议选项
+      if (response['suggestions'] != null) {
+        final newSuggestions = List<String>.from(response['suggestions']);
+        messages.last.suggestions = newSuggestions;
+        suggestions.assignAll(newSuggestions);
+      }
     } catch (e) {
       debugPrint('处理目标操作失败: $e');
       currentResponse.value = '处理目标操作失败，请重试';
@@ -250,7 +249,7 @@ class ChatController extends GetxController {
       case 'day': return GoalPeriod.day;
       case 'week': return GoalPeriod.week;
       case 'month': return GoalPeriod.month;
-      case 'quarterly': return GoalPeriod.quarter;
+      case 'quarter': return GoalPeriod.quarter;
       case 'year': return GoalPeriod.year;
       default: return GoalPeriod.day;
     }
@@ -263,7 +262,7 @@ class ChatController extends GetxController {
       case 'day': return '今日';
       case 'week': return '本周';
       case 'month': return '本月';
-      case 'quarterly': return '本季度';
+      case 'quarter': return '本季度';
       case 'year': return '今年';
       default: return '当前周期';
     }

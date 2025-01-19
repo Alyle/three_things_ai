@@ -5,6 +5,7 @@ import '../../../controllers/goal_controller.dart';
 import '../../../models/goal.dart';
 import '../../widgets/add_goal_dialog.dart';
 import 'goal_detail_page.dart';
+import '../../../core/theme/app_theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -149,8 +150,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
               ],
             ),
-            child: Card(
+            child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: AppTheme.cardDecoration,
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: theme.colorScheme.surface,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/goal_controller.dart';
 import '../../../models/goal.dart';
+import '../../../core/theme/app_theme.dart';
 
 class GoalDetailPage extends StatefulWidget {
   final Goal goal;
@@ -72,9 +73,7 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
             _isEditing
               ? TextField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: AppTheme.inputDecoration,
                 )
               : Text(
                   widget.goal.title,
@@ -95,9 +94,7 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
               ? TextField(
                   controller: _descriptionController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: AppTheme.inputDecoration,
                 )
               : Text(
                   widget.goal.description,

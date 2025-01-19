@@ -6,6 +6,7 @@ class ChatMessage {
   String? type;
   List<GoalAction>? actions;
   int? actionNum;
+  Map<String, String>? stats;
 
   ChatMessage({
     required this.content,
@@ -14,6 +15,7 @@ class ChatMessage {
     this.type,
     this.actions,
     this.actionNum,
+    this.stats,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 

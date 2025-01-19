@@ -37,7 +37,6 @@ class ChatPage extends StatelessWidget {
   /// 构建单条消息气泡
   Widget _buildMessage(BuildContext context, ChatMessage message) {
     return Column(
-      // 根据消息发送者调整对齐方式
       crossAxisAlignment: message.isUser 
           ? CrossAxisAlignment.end 
           : CrossAxisAlignment.start,
@@ -88,6 +87,21 @@ class ChatPage extends StatelessWidget {
             ],
           ),
         ),
+        
+        // 统计信息
+        if (!message.isUser && message.stats != null) ...[
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              '---\n'
+              ' 回答字数：${message.stats!['wordCount']} | '
+              ' 响应时间：${message.stats!['duration']}秒',
+              style: AppTheme.chatStatsStyle,
+            ),
+          ),
+        ],
+        
         // AI回复后显示建议按钮
         if (!message.isUser && message.suggestions?.isNotEmpty == true)
           Container(
