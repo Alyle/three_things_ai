@@ -1,4 +1,63 @@
 {
   "isFirstLaunch": true,
-  "lastLoginTime": null
+  "lastLoginTime": null,
+  "user": {
+    "id": "default_user",
+    "name": "默认用户",
+    "createdAt": "2024-03-21T00:00:00Z",
+    "lastLoginAt": "2024-03-21T08:00:00Z"
+  },
+  "stats": {
+    "goals": {
+      "total": 6,
+      "completed": 0,
+      "byPeriod": {
+        "day": {
+          "total": 2,
+          "completed": 0,
+          "currentPeriod": {
+            "number": 81,
+            "total": 2,
+            "completed": 0
+          }
+        },
+        "week": {
+          "total": 1,
+          "completed": 0,
+          "currentPeriod": {
+            "number": 12,
+            "total": 1,
+            "completed": 0
+          }
+        },
+        "month": {
+          "total": 1,
+          "completed": 0,
+          "currentPeriod": {
+            "number": 3,
+            "total": 1,
+            "completed": 0
+          }
+        },
+        "quarter": {
+          "total": 1,
+          "completed": 0,
+          "currentPeriod": {
+            "number": 1,
+            "total": 1,
+            "completed": 0
+          }
+        },
+        "year": {
+          "total": 1,
+          "completed": 0,
+          "currentPeriod": {
+            "number": 2024,
+            "total": 1,
+            "completed": 0
+          }
+        }
+      }
+    }
+  }
 }

@@ -9,6 +9,7 @@ import '../services/notification_service.dart';
 import '../core/utils/json_fixer.dart';
 import '../core/config/app_config.dart';
 import 'dart:convert';
+import '../services/log_service.dart';
 
 /// 聊天控制器：负责管理AI对话的状态和业务逻辑
 class ChatController extends GetxController {
@@ -66,6 +67,9 @@ class ChatController extends GetxController {
         responseDuration = response['duration'] as Duration;
         aiMessage.content = fullResponse;
         messages.refresh();  // 使用 refresh 而不是 update
+
+        // 记录日志
+        _logResponse(fullResponse, content);
       }
 
       // 如果启用了JSON检查，尝试解析和处理JSON响应
@@ -95,6 +99,18 @@ class ChatController extends GetxController {
     }
   }
 
+  /// 记录日志
+  /// [fullResponse] AI响应的完整内容
+  /// [content] 用户发送的消息内容
+  void _logResponse(String fullResponse, String content) {
+    if (AppConfig.features.enableLogging) {
+      LogService().info('AI响应内容: $fullResponse'); // 记录响应内容到日志文件
+    }
+    if (AppConfig.features.enableChatLogging) {
+      LogService().info('聊天内容: $content'); // 记录聊天内容到日志文件
+    }
+  }
+
   /// 处理JSON格式的AI响应
   /// [jsonResponse] AI返回的JSON数据
   Future<void> _handleJsonResponse(Map<String, dynamic> jsonResponse) async {
@@ -112,8 +128,7 @@ class ChatController extends GetxController {
   /// [response] 查询响应数据
   void _handleGoalQuery(Map<String, dynamic> response) {
     // 更新AI回复内容
-    currentResponse.value = response['answer'] ?? '';
-    messages.last.content = currentResponse.value;
+    messages.last.content = response['answer'] ?? '';
     
     // 更新建议选项
     if (response['suggestions'] != null) {
@@ -162,9 +177,8 @@ class ChatController extends GetxController {
       }
       
       // 更新操作结果消息
-      currentResponse.value = 
+      messages.last.content = 
           '已成功处理 $successCount/$actionNum 个目标操作：\n${operationResults.map((r) => ' - $r').join('\n')}';
-      messages.last.content = currentResponse.value;
       update();
       scrollToBottom();
       // 更新建议选项
@@ -175,9 +189,7 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       debugPrint('处理目标操作失败: $e');
-      currentResponse.value = '处理目标操作失败，请重试';
-      messages.last.content = currentResponse.value;
-
+      messages.last.content = '处理目标操作失败，请重试';
     }
   }
 

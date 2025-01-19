@@ -14,7 +14,8 @@ import 'package:three_things_ai/services/storage_service.dart';
 
 void main() {
   testWidgets('App test', (WidgetTester tester) async {
-    final storageService = await StorageService().init();
+    final storageService = StorageService();
+    await storageService.init();
     Get.put(GoalController(storageService));
     await tester.pumpWidget(const MyApp());
     

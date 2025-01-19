@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:three_things_ai/core/utils/date_time_util.dart';
 import 'package:uuid/uuid.dart';
 import '../models/goal.dart';
 import '../services/storage_service.dart';
@@ -52,7 +53,7 @@ class GoalController extends GetxController {
         description: description,
         createdAt: DateTime.now(),
         period: period,
-        deadline: deadline,
+        deadline: DateTimeUtil.getEndOfPeriod(period) ,
         tags: tags ?? [],
         priority: priority ?? 0,
       );
@@ -80,22 +81,21 @@ class GoalController extends GetxController {
     required String goalId,
     String? title,
     String? description,
-    DateTime? deadline,
     List<String>? tags,
     int? priority,
   }) async {
     try {
       final goalIndex = goals.indexWhere((g) => g.id == goalId);
       if (goalIndex != -1) {
-        if (title != null) goals[goalIndex].title = title;
-        if (description != null) goals[goalIndex].description = description;
-        if (deadline != null) goals[goalIndex].deadline = deadline;
-        if (tags != null) goals[goalIndex].tags = tags;
-        if (priority != null) goals[goalIndex].priority = priority;
+        goals[goalIndex] = goals[goalIndex].copyWith(
+          title: title,
+          description: description,
+          tags: tags,
+          priority: priority,
+        );
         
         goals.refresh();
         await _storage.saveGoals(goals);
-        
         NotificationService.success('目标更新成功');
       }
     } catch (e) {

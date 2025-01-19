@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../models/user_data.dart';
 import 'storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../core/utils/date_time_util.dart';
 
 class UserDataService {
   static const String _key = 'user_data';
@@ -18,12 +20,12 @@ class UserDataService {
         _userData = UserData.fromJson(jsonDecode(jsonString));
         debugPrint('用户数据加载成功: ${jsonEncode(_userData!.toJson())}');
       } else {
-        _userData = const UserData();
+        _userData = _createDefaultUserData();
         await _saveData();
         debugPrint('创建新的用户数据: ${jsonEncode(_userData!.toJson())}');
       }
     } catch (e) {
-      _userData = const UserData();
+      _userData = _createDefaultUserData();
       debugPrint('加载用户数据失败，使用默认值: $e');
     }
   }
@@ -52,4 +54,67 @@ class UserDataService {
 
   /// 获取用户数据
   UserData? get userData => _userData;
+
+  Future<void> saveUserData(UserData userData) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_key, jsonEncode(userData.toJson()));
+    } catch (e) {
+      debugPrint('保存用户数据失败: $e');
+      rethrow;
+    }
+  }
+
+  Future<UserData> loadUserData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonStr = prefs.getString(_key);
+      
+      if (jsonStr == null) {
+        return _createDefaultUserData();
+      }
+      
+      return UserData.fromJson(jsonDecode(jsonStr));
+    } catch (e) {
+      debugPrint('加载用户数据失败: $e');
+      return _createDefaultUserData();
+    }
+  }
+
+  UserData _createDefaultUserData() {
+    final now = DateTime.now();
+    return UserData(
+      isFirstLaunch: true,
+      lastLoginTime: now,
+      user: User(
+        id: 'default_user',
+        name: '默认用户',
+        createdAt: now,
+        lastLoginAt: now,
+      ),
+      stats: GoalStats(
+        total: 0,
+        completed: 0,
+        byPeriod: {
+          'day': _createDefaultPeriodStats(DateTimeUtil.getDayOfYear()),
+          'week': _createDefaultPeriodStats(DateTimeUtil.getWeekOfYear()),
+          'month': _createDefaultPeriodStats(DateTimeUtil.getMonthOfYear()),
+          'quarter': _createDefaultPeriodStats(DateTimeUtil.getQuarterOfYear()),
+          'year': _createDefaultPeriodStats(now.year),
+        },
+      ),
+    );
+  }
+
+  PeriodStats _createDefaultPeriodStats(int number) {
+    return PeriodStats(
+      total: 0,
+      completed: 0,
+      currentPeriod: CurrentPeriodStats(
+        number: number,
+        total: 0,
+        completed: 0,
+      ),
+    );
+  }
 } 

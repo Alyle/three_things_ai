@@ -13,7 +13,10 @@ class AppConfig {
   static const features = _FeatureConfig(
     enableJsonCheck: false,
     enableDebugLog: true,
-    enableCache: true,
+    enableLogging: true,      // 总开关
+    enableChatLogging: false,  // 聊天日志开关
+    enableGoalLogging: true,  // 目标日志开关
+    enableDebugLogging: true,  // 调试日志开关
   );
   
   /// UI相关配置
@@ -23,9 +26,11 @@ class AppConfig {
     scrollAnimationMillis: 200,
   );
   
-  /// 文件路径配置
+  /// 路径配置
   static const path = _PathConfig(
-    systemPrompt: 'lib/core/config/prompts/system_prompt.md',
+    webDocumentsPath: '/documents',  // Web环境下的文档目录
+    webLogsPath: '/logs',            // Web环境下的日志目录
+    webCachePath: '/cache',          // Web环境下的缓存目录
   );
 }
 
@@ -62,8 +67,11 @@ class _APIConfig {
 class _FeatureConfig {
   const _FeatureConfig({
     required this.enableJsonCheck,
-    required this.enableDebugLog,
-    required this.enableCache,
+    required this.enableDebugLog, 
+    required this.enableLogging,
+    required this.enableChatLogging,
+    required this.enableGoalLogging,
+    required this.enableDebugLogging,
   });
   
   /// 是否启用JSON响应检查
@@ -71,9 +79,18 @@ class _FeatureConfig {
   
   /// 是否启用调试日志
   final bool enableDebugLog;
-  
-  /// 是否启用本地缓存
-  final bool enableCache;
+
+  /// 是否启用日志
+  final bool enableLogging;
+
+  /// 是否启用聊天日志
+  final bool enableChatLogging;
+
+  /// 是否启用目标日志
+  final bool enableGoalLogging;
+
+  /// 是否启用调试日志
+  final bool enableDebugLogging;
 }
 
 /// UI相关配置
@@ -102,12 +119,20 @@ class _UIConfig {
       Duration(milliseconds: scrollAnimationMillis);
 }
 
-/// 文件路径配置
+/// 路径配置
 class _PathConfig {
   const _PathConfig({
-    required this.systemPrompt,
+    required this.webDocumentsPath,
+    required this.webLogsPath,
+    required this.webCachePath,
   });
   
-  /// 系统提示词文件路径
-  final String systemPrompt;
-} 
+  /// Web环境下的文档目录路径
+  final String webDocumentsPath;
+  
+  /// Web环境下的日志目录路径
+  final String webLogsPath;
+  
+  /// Web环境下的缓存目录路径
+  final String webCachePath;
+}

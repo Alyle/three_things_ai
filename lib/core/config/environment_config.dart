@@ -23,4 +23,10 @@ class EnvironmentConfig {
     if (isWeb) return 'web';
     return Platform.operatingSystemVersion;
   }
+
+  /// 是否为开发环境
+  static bool get isDevelopment => !kReleaseMode;
+  
+  /// 是否为生产环境
+  static bool get isProduction => kReleaseMode;
 } 

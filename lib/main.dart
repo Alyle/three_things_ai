@@ -5,6 +5,7 @@ import 'controllers/goal_controller.dart';
 import 'views/navigation/main_navigation.dart';
 import 'services/storage_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/config/app_config.dart';
 
 // 应用程序入口点
 Future<void> main() async {
@@ -12,8 +13,18 @@ Future<void> main() async {
     // 确保 Flutter 绑定初始化
     WidgetsFlutterBinding.ensureInitialized();
     
-    // 初始化服务
-    final StorageService storageService = await StorageService().init();
+    // 初始化存储服务
+    final storageService = StorageService();
+    await storageService.init();
+    
+    // 初始化日志服务
+    final logService = storageService.logService;
+    Get.put(logService);  // 注入日志服务以供全局访问
+    
+    // 记录应用启动日志
+    if (AppConfig.features.enableLogging) {
+      await logService.info('应用程序启动');
+    }
     
     // 初始化控制器
     Get.put<GoalController>(GoalController(storageService));

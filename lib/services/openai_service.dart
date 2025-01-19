@@ -73,8 +73,8 @@ class OpenAIService {
       final data = jsonDecode(response.body);
       return data['choices'][0]['message']['content'];
     } catch (e) {
-      debugPrint('OpenAI请求错误: $e');
-      rethrow;
+      debugPrint('获取AI响应失败: $e');
+      throw Exception('获取AI响应失败');
     }
   }
 } 

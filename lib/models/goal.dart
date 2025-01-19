@@ -11,7 +11,7 @@ class Goal {
   String title;
   String description;
   final DateTime createdAt;
-  DateTime? deadline;  // 新增截止日期
+  final DateTime deadline;  // 保持 final
   bool isCompleted;
   final GoalPeriod period;
   List<String> tags;  // 新增标签
@@ -23,7 +23,7 @@ class Goal {
     required this.description,
     required this.createdAt,
     required this.period,
-    this.deadline,
+    required this.deadline,
     this.isCompleted = false,
     List<String>? tags,
     this.priority = 2,  // 默认中等优先级
@@ -34,7 +34,7 @@ class Goal {
     'title': title,
     'description': description,
     'createdAt': createdAt.toIso8601String(),
-    'deadline': deadline?.toIso8601String(),  // 新增
+    'deadline': deadline.toIso8601String(),  // 新增
     'isCompleted': isCompleted,
     'period': period.index,
     'tags': tags,                             // 新增
@@ -46,10 +46,8 @@ class Goal {
     title: json['title'],
     description: json['description'],
     createdAt: DateTime.parse(json['createdAt']),
-    deadline: json['deadline'] != null 
-        ? DateTime.parse(json['deadline']) 
-        : null,
-    isCompleted: json['isCompleted'],
+    deadline: DateTime.parse(json['deadline']), // 移除可空性,因为在构造函数中已声明为必需
+    isCompleted: json['isCompleted'] ?? false,
     period: GoalPeriod.values[json['period'] ?? 0],
     tags: List<String>.from(json['tags'] ?? []),
     priority: json['priority'] ?? 2,
