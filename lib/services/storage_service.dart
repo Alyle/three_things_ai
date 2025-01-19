@@ -7,6 +7,9 @@ class StorageService {
   static const _localStorageKey = 'goals_data';
   late SharedPreferences _prefs;
 
+  // 添加一个公共方法来访问 SharedPreferences
+  SharedPreferences get prefs => _prefs;
+
   Future<StorageService> init() async {
     _prefs = await SharedPreferences.getInstance();
     return this;
