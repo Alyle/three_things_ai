@@ -36,3 +36,7 @@ flutter:
           weight: 500
         - asset: fonts/NotoSansCJKsc-Bold.otf
           weight: 700
+
+  assets:
+    - documents/goal_data.json
+    - documents/user_data.json

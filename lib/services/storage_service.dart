@@ -7,6 +7,7 @@ import '../models/goal.dart';
 import 'log_service.dart';
 import 'package:flutter/foundation.dart';
 import '../core/config/environment_config.dart';
+import 'package:flutter/services.dart';
 
 class StorageService {
   static const String _localStorageKey = 'goals';
@@ -46,6 +47,19 @@ class StorageService {
       await _logService.init(documentsPath);
       
       await _logService.info('存储服务初始化成功');
+
+      // Web环境下检查和加载数据
+      if (EnvironmentConfig.isWeb) {
+        // 检查IndexedDB中是否存在数据
+        final hasData = await _checkIndexedDBData();
+        if (!hasData) {
+          // 如果没有数据，则初始化默认数据
+          await _initializeDefaultData();
+        } else {
+          // 如果有数据，从IndexedDB加载数据
+          await _loadDataFromIndexedDB();
+        }
+      }
     } catch (e) {
       debugPrint('初始化存储服务失败: $e');
     }
@@ -174,5 +188,87 @@ class StorageService {
     
     final record = records.last as Map<String, dynamic>;
     return jsonDecode(record['data'] as String);
+  }
+
+  /// 初始化默认数据
+  Future<void> _initializeDefaultData() async {
+    if (_db == null) return;
+
+    try {
+      // 检查是否已经有数据
+      final txn = _db!.transaction(_goalsStore, 'readonly');
+      final store = txn.objectStore(_goalsStore);
+      final existingGoals = await store.getAll();
+      await txn.completed;
+
+      // 如果没有数据，则导入默认数据
+      if (existingGoals.isEmpty) {
+        // 从文件读取目标数据
+        final goalsJson = await rootBundle.loadString('documents/goal_data.json');
+        final goalsDataMap = jsonDecode(goalsJson);
+        final goals = (goalsDataMap['goals'] as List).map((goalJson) => Goal.fromJson(goalJson)).toList();
+        await saveGoals(goals);
+
+        // 从文件读取用户数据
+        final userDataJson = await rootBundle.loadString('documents/user_data.json');
+        final userDataMap = jsonDecode(userDataJson);
+        await saveUserData(userDataMap);
+
+        await _logService.info('默认数据初始化成功');
+      }
+    } catch (e) {
+      debugPrint('初始化默认数据失败: $e');
+      await _logService.error('初始化默认数据失败: $e');
+    }
+  }
+
+  /// 检查IndexedDB中是否存在数据
+  Future<bool> _checkIndexedDBData() async {
+    if (_db == null) return false;
+
+    try {
+      // 检查goals数据
+      final goalsTxn = _db!.transaction(_goalsStore, 'readonly');
+      final goalsStore = goalsTxn.objectStore(_goalsStore);
+      final goalsCount = await goalsStore.count();
+      await goalsTxn.completed;
+
+      // 检查user数据
+      final userTxn = _db!.transaction(_userStore, 'readonly');
+      final userStore = userTxn.objectStore(_userStore);
+      final userCount = await userStore.count();
+      await userTxn.completed;
+
+      await _logService.info('检查IndexedDB数据: goals=$goalsCount, user=$userCount');
+      return goalsCount > 0 || userCount > 0;
+    } catch (e) {
+      debugPrint('检查IndexedDB数据失败: $e');
+      await _logService.error('检查IndexedDB数据失败: $e');
+      return false;
+    }
+  }
+
+  /// 从IndexedDB加载数据
+  Future<void> _loadDataFromIndexedDB() async {
+    if (_db == null) return;
+
+    try {
+      // 加载goals数据
+      final goals = await loadGoals();
+      if (goals.isNotEmpty) {
+        debugPrint('从IndexedDB成功加载${goals.length}个目标');
+      }
+
+      // 加载user数据
+      final userData = await loadUserData();
+      if (userData != null) {
+        debugPrint('从IndexedDB成功加载用户数据');
+      }
+
+      await _logService.info('从IndexedDB加载数据成功');
+    } catch (e) {
+      debugPrint('从IndexedDB加载数据失败: $e');
+      await _logService.error('从IndexedDB加载数据失败: $e');
+    }
   }
 } 

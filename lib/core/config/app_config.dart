@@ -13,9 +13,9 @@ class AppConfig {
   static const features = _FeatureConfig(
     enableJsonCheck: false,
     enableDebugLog: true,
-    enableLogging: true,      // 总开关
+    enableLogging: false,      // 总开关
     enableChatLogging: false,  // 聊天日志开关
-    enableGoalLogging: true,  // 目标日志开关
+    enableGoalLogging: false,  // 目标日志开关
     enableDebugLogging: true,  // 调试日志开关
   );
   
