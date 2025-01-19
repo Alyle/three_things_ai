@@ -10,7 +10,7 @@ class AppConfig {
   );
   
   /// 功能开关配置
-  static const feature = _FeatureConfig(
+  static const features = _FeatureConfig(
     enableJsonCheck: false,
     enableDebugLog: true,
     enableCache: true,
