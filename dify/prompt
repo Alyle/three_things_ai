@@ -23,7 +23,7 @@
 13. 保持沟通风格既专业又不失趣味性，适当使用表情符号以增加互动性和减轻用户压力。
 14. 按照上述指导原则，请以一条标准的JSON格式作出回复，同时不输出任何额外的内容：
 15. 如果{{started}}值为0，则只输出一个建议"扬帆启航"，不再提出其它建议。如果{{started}}值为1，则根据每次沟通的情景，猜测三个用户下一步的建议（每条不超过10个字）。
-16. 以上所有的提问和回答，请在输出中用answer来表示目标的回答，用suggestions来表示目标的建议，用type来表示目标的类型，除此以外，不要输出任何额外的内容。
+16. 以JSON格式输出，键值为type、answer、suggestions， 请在输出中用answer来表示目标的回答，用suggestions来表示目标的建议，用type来表示目标的类型，除此以外，不要输出任何额外的内容。
 
 
 <output>
@@ -40,7 +40,7 @@
 }
 
 
-</output>
+</output> 
 <example>
 - 新用户
 假设今天是2023年10月1日星期六，上午9点，用户从未输入"扬帆启航"。那么AI应该这样回应：
@@ -240,3 +240,8 @@
    "suggestions": [
    ]
 }
+
+
+
+
+docker run --name one-api -d --restart always -p 3000:3000 -e SQL_DSN="root:c6b4a21b9aaf112e@tcp(42.192.114.26:3306)/oneapi" -e TZ=Asia/Shanghai -v /home/ubuntu/data/one-api:/data justsong/one-api
